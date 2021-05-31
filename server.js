@@ -26,6 +26,6 @@ app.get('/', (req,res)=>{
     res.render('login.html');
 })
 
-app.listen('3000');
+app.listen(process.env.PORT || 3000);
 
 console.log('server running');
