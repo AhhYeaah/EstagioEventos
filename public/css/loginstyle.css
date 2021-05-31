@@ -1,127 +1,127 @@
 
-        /* CSS RESSET */
-        *{
-            padding:0;
-            margin:0;
-            vertical-align:baseline;
-            list-style:none;
-            border:0;
-        }
+/* CSS RESSET */
+*{
+    padding:0;
+    margin:0;
+    vertical-align:baseline;
+    list-style:none;
+    border:0;
+}
 
-        body{
-            background-image: linear-gradient(to bottom left,#ee37ff,#43e3f1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: "Open Sans";
-        }
+body{
+    background-image: linear-gradient(to bottom left,#ee37ff,#43e3f1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: "Open Sans";
+}
 
-        /*Estilização dos container de login*/
-        section{
-            height: 60vh;
-            min-height: 450px;
-            width: 450px;
-            min-width: 450px;
+/*Estilização dos container de login*/
+section{
+    height: 60vh;
+    min-height: 450px;
+    width: 450px;
+    min-width: 450px;
 
-            background-color: white;
-            border-radius: 30px;
+    background-color: white;
+    border-radius: 30px;
 
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            visibility: visible;
-            position: relative;
-        }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    visibility: visible;
+    position: relative;
+}
 
-        /*E a especifica para o cadastro que ja aparece invisivel*/
-        #cadastro{
-            visibility: hidden;
-            opacity: 0;
-        }
+/*E a especifica para o cadastro que ja aparece invisivel*/
+#cadastro{
+    visibility: hidden;
+    opacity: 0;
+}
 
-        /*Em ordem de aparição no container*/
-        h1{
-            margin-bottom:50px;
-            text-align: center;
-        }
+/*Em ordem de aparição no container*/
+h1{
+    margin-bottom:50px;
+    text-align: center;
+}
 
-        label{
-            margin-left: 5px;
-        }
+label{
+    margin-left: 5px;
+}
 
-        /* 
-            Estilizando as duas caixas de texto 
-            Isso tambem estilizaria o botão, mas todos os atributos aqui
-            são sobrepostos no css dele, então sem problemas
-        */
-        input{
-            background-color: transparent;
-            border: none;
-            border-bottom: 2px solid rgba(0,0,0, 0.2);
-            height:40px;
-            width: 325px;
-            margin-bottom: 20px;
-        }
+/* 
+    Estilizando as duas caixas de texto 
+    Isso tambem estilizaria o botão, mas todos os atributos aqui
+    são sobrepostos no css dele, então sem problemas
+*/
+input{
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(0,0,0, 0.2);
+    height:40px;
+    width: 325px;
+    margin-bottom: 20px;
+}
 
-        /*
-            O tamanho do espaçamento embaixo do password é diferente
-            por conta do texto de esqueceu a senha
-        */
-        input[type="password"]{
-            margin-bottom: 10px;
-        }
+/*
+    O tamanho do espaçamento embaixo do password é diferente
+    por conta do texto de esqueceu a senha
+*/
+input[type="password"]{
+    margin-bottom: 10px;
+}
 
-        /*
-            Tirando a linha preta de quando o text é selecionado
-        */
-        input[type="email"]:focus, input[type="password"]:focus{
-            outline: none;
-            border-bottom: 2px solid rgba(0,0,0, 1);
-        }
+/*
+    Tirando a linha preta de quando o text é selecionado
+*/
+input[type="email"]:focus, input[type="password"]:focus{
+    outline: none;
+    border-bottom: 2px solid rgba(0,0,0, 1);
+}
 
-        /*Botão*/
-        input[type="submit"]{
-            border-radius: 20px;
-            
-            width: 200px;       
-            height: 2.5em;
+/*Botão*/
+input[type="button"]{
+    border-radius: 20px;
+    
+    width: 200px;       
+    height: 2.5em;
 
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            
-            background: #3c86f5;
-            color: white;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    
+    background: #3c86f5;
+    color: white;
 
-            margin-top: 30px;
-            margin-bottom: 25px;
-        }
+    margin-top: 30px;
+    margin-bottom: 25px;
+}
 
-        input[type="submit"]:hover{
-            background: #74a9f8;
-        }
-        
-        /*Spans*/
-        span{
-            float: right;
-            font-size: 0.9em;
-            color: #555;
-            cursor: pointer;
-        }
-        
-        span:hover{
-            color: #000;
-        }
-        /*Spans após botão de submit*/
-        input[type="submit"] ~ span{
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            float: none;
-            text-align: center;
-        } 
-        #loginbox{
-            background: linear-gradient(to bottom left,#ee37ff,#43e3f1);
-            border-radius: 30px;
-        }
+input[type="button"]:hover{
+    background: #74a9f8;
+}
+
+/*Spans*/
+span{
+    float: right;
+    font-size: 0.9em;
+    color: #555;
+    cursor: pointer;
+}
+
+span:hover{
+    color: #000;
+}
+/*Spans após botão de button*/
+input[type="button"] ~ span{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    float: none;
+    text-align: center;
+} 
+#loginbox{
+    background: linear-gradient(to bottom left,#ee37ff,#43e3f1);
+    border-radius: 30px;
+}

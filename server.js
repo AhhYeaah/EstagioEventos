@@ -1,5 +1,6 @@
 //express and socket.io
-const express = require('express')
+const express = require('express');
+const { reset } = require('nodemon');
 const app  = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -9,7 +10,6 @@ app.use(require('cors')());
 
 //mongoose for db and dotenv to hide the db credentials
 require('dotenv').config()
-
 
 // This allows me to view html and css files and render them 
 const path = require('path');
@@ -21,10 +21,10 @@ app.use(express.static(path.join(__dirname, 'public/css')));
 
 
 //Importing routes from routes files
+const loginRoute = require('./routes/login.js');
+app.use('/', loginRoute)
 
-app.get('/', (req,res)=>{
-    res.render('login.html');
-})
+
 
 app.listen(process.env.PORT || 3000);
 

@@ -4,13 +4,38 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--Jquerry-->
+    <!--Jquerry e crypto-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
     <!--CSS do bootstrap, eu gosto do tamanho da letra que eles deixam-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <!--Fontes-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <!--style-->
     <link rel="stylesheet" href="./loginstyle.css" type="text/css">
     <script>
+        function Login(){
+            let data = $('#login_form').serializeArray();
+            let email = data[0].value
+            let password = data[1].value
+
+            fetch('/login', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }).then((result)=>{
+                console.log(result)
+            }
+            )
+
+            console.log(data[0])
+
+        }
+
         function Slide(element) {
             /*
             * Jquery ids são #+id
@@ -53,9 +78,9 @@
     <title>Login</title>
 </head>
 <body>
-    <div id="loginbox">
+    <div id="loginbox">           
             <section id="login"">
-                <form method="POST" action="onclick()" >
+                <form id="login_form" method="POST" action="/" >
                     <h1>Login</h1>
 
                     <div>
@@ -69,7 +94,7 @@
                     </div>
 
                         <span onclick="alert('Função não implementada')">Esqueceu sua senha?</span>
-                        <input type="submit" value="Entrar">
+                        <input type="button" value="Entrar" onclick="Login()">
 
                         <!--Aqui eu estou pegando o parente desse span, que será o elemento que eu vou precisar mover-->
                     
@@ -78,20 +103,20 @@
             </section>
 
             <section id="cadastro">
-                <form method="POST" action="onclick()" >
+                <form id="cadastro_form" method="POST" action="onclick()" >
                     <h1>Cadastro</h1>
 
                     <div>
-                        <label for="email">Email: </label><br />
-                        <input type="email" id="email" name="email" required placeholder="Digite seu email"> 
+                        <label for="email_cadastro">Email: </label><br />
+                        <input type="email" id="email_cadastro" name="email_cadastro" required placeholder="Digite seu email"> 
                     </div>
 
                     <div>
-                        <label for="password">Senha: </label><br />
-                        <input type="password"  id="password" name="pass" required placeholder='Digite sua senha' /> 
+                        <label for="password_cadastro">Senha: </label><br />
+                        <input type="password"  id="password_cadastro" name="password_cadastro" required placeholder='Digite sua senha' /> 
                     </div>
-                        <input type="submit">
-                        <span onclick="Slide($(this).parent().parent().attr('id'), '-=450', '#login')">Ja tenho uma conta</a>
+                        <input type="button" value="Entrar">
+                        <span onclick="Slide($(this).parent().parent().attr('id'))">Ja tenho uma conta</a>
     
                     </form>        
             </section>
