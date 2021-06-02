@@ -1,9 +1,7 @@
 //express and socket.io
 const express = require('express');
-const { reset } = require('nodemon');
 const app  = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
 
 //cors
 app.use(require('cors')());
@@ -23,6 +21,8 @@ app.use(express.static(path.join(__dirname, 'public/css')));
 //Importing routes from routes files
 const loginRoute = require('./routes/login.js');
 app.use('/', loginRoute)
+const indexRoute = require('./routes/index.js');
+app.use('/index', indexRoute)
 
 
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,40 +16,64 @@
     <!--style-->
     <link rel="stylesheet" href="./loginstyle.css" type="text/css">
     <script>
-        //TODO: Separar scripts e adicionar resposta no modal para todos os codigos de erro
-        // Bad Gateway, Invalid Email, Unauthorized, Sucess, Login Expired
-    $(document).ready(()=>{
-        firstSessionCookie = Cookies.get("firstSession")
-        sessionCookies = Cookies.get("userSection")
+        //Quando a janela estiver carregada, peça para o servidor o firstSession cookie
+        //ou então, se tiver o cookie de seção, envie para o servidor para que ele possa
+        //Enviar informações
+        $(document).ready(()=>{
+            Cookies.remove('firstSession', '')
+            var firstSessionCookie = Cookies.get("firstSession")
+            var sessionCookies = Cookies.get("userSession")
 
-        if(sessionCookies){
-            axios.post('/login', {
-                withCredentials: true
-            });
-        }else{
-            if(firstSessionCookie){
-                //Do nothing
-            }else{
+            setTimeout(function(){
+                $('#modal_body').empty()
+                $('#exampleModalLabel').empty()
+                $('#exampleModalLabel').append('Sessão prestes a expirar');
+                $('#modal_body').append('<p>Sua sessão ira expirar em 1 minuto e a pagina será recarregada</p>');
+                $('#ShowModal').trigger('click')
+            }, 29*60*1000)
+
+            setTimeout(function(){
+                location.reload(true)  
+            }, 30*60*1000)
+
+
+            if(sessionCookies){
                 axios.post('/login', {
-                    isFirstSession: true,
-                });
+                    withCredentials: true
+                }).then(function(result){
+                    window.location.href = "/index"
+                }
+                );
+            }else{
+                if(firstSessionCookie){
+                    axios.post('/firstsession', {
+                        isFirstSession: false,
+                    });
+                }else{
+                    axios.post('/firstsession', {
+                        isFirstSession: true,
+                    });
+                }
             }
-        }
-    })
-
+        })
+    </script>
+    <script>
+        //Aqui a função chamada quando o form chama o onSubmit
         function Login(){
+            //Pegar informaçoes do form
+            var data = $('#login_form').serializeArray();
 
-            let data = $('#login_form').serializeArray();
-            let email = data[0].value
-            let password = data[1].value
+            var email = data[0].value
+            var password = data[1].value
+
+            //Envia post para o servidor com as credenciais
             axios.post('/login',{
                 email: email,
                 password: password,
                 withCredentials: true
+                //TODO: Caso o resultado seja um sucesso, redireciona para pagina de calendario
             }).then((result)=>{
-                $('#modal_body').empty()
-                $('#modal_body').append('<p>Sucesso!</p>');
-                $('#ShowModal').trigger('click')
+                window.location.href = "/index"
             }).catch((error)=>{
                 //Criação dos modais para respostas do servidor
                 switch(error.response.data){
@@ -60,6 +84,13 @@
                         $('#modal_body').append('<p>Infelizmente esse formato de email não é aceito por nossos servidores</p>');
                         $('#ShowModal').trigger('click')
                         break;
+                    case "Invalid Password":
+                        $('#modal_body').empty()
+                        $('#exampleModalLabel').empty()
+                        $('#exampleModalLabel').append('Password invalida');
+                        $('#modal_body').append('<p>Há algo errado com a sua senha</p>');
+                        $('#ShowModal').trigger('click')
+                        break;
                     case "Unauthorized":
                         $('#modal_body').empty()
                         $('#exampleModalLabel').empty()
@@ -67,7 +98,7 @@
                         $('#modal_body').append('<p>Login ou senha incorretos</p>');
                         $('#ShowModal').trigger('click')
                         break;
-                    case "Login Expired":
+                    case "Session Expired":
                         $('#modal_body').empty()
                         $('#exampleModalLabel').empty()
                         $('#exampleModalLabel').append('Sessão expirou');
@@ -76,7 +107,7 @@
                         Cookies.remove('firstSession')
                         setTimeout(function(){
                             location.reload(true)  
-                        }, 10000)
+                        }, 5000)
                         break;
                     default:
                         $('#modal_body').empty()
@@ -89,6 +120,116 @@
             })
         }
 
+        function Cadastro(){
+
+            var data = $('#cadastro_form').serializeArray();
+
+            var email = data[0].value
+            var password = data[1].value
+            var confirm_password = data[2].value
+            
+
+            function validateEmail(email){
+                var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return REGEX_EMAIL.test(String(email).toLowerCase())
+            }
+            
+            function validatePassword(password){
+                var REGEX_SENHA = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+                return REGEX_SENHA.test(String(password).toLowerCase())
+            }
+
+            function validateConfirmPassword(password, confirm_password){
+                return (password == confirm_password)
+            }
+
+            if(validateEmail(email)){
+                if(validatePassword(password)){
+                    if(validateConfirmPassword(password, confirm_password)){
+                        axios.post('/cadastro',{
+                            email: email,
+                            password: password,
+                            withCredentials: true
+                            //TODO: Caso o resultado seja um sucesso, redireciona para pagina de calendario
+                        }).then((result)=>{
+                            window.location.href = "/index"
+                        }).catch((error)=>{
+                            //Criação dos modais para respostas do servidor
+                            switch(error.response.data){
+                                case "Invalid Email":
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Email invalido');
+                                    $('#modal_body').append('<p>Infelizmente esse formato de email não é aceito por nossos servidores</p>');
+                                    $('#ShowModal').trigger('click')
+                                    break;
+                                case "Invalid Password":
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Password invalida');
+                                    $('#modal_body').append('<p>Há algo errado com a sua senha</p>');
+                                    $('#ShowModal').trigger('click')
+                                    break;
+                                case "Unauthorized":
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Credenciais incorretas');
+                                    $('#modal_body').append('<p>Login ou senha incorretos</p>');
+                                    $('#ShowModal').trigger('click')
+                                    break;
+                                case "Session Expired":
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Sessão expirou');
+                                    $('#modal_body').append('<p>Sua sessão expirou, a pagina irá ser recarregada</p>');
+                                    $('#ShowModal').trigger('click')
+                                    Cookies.remove('firstSession')
+                                    setTimeout(function(){
+                                        location.reload(true)  
+                                    }, 10000)
+                                    break;
+                                case "ER_DUP_ENTRY":
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Ja cadastrado');
+                                    $('#modal_body').append('<p>Este email ja esta em uso</p>');
+                                    $('#ShowModal').trigger('click')
+                                    break;
+                                default:
+                                    $('#modal_body').empty()
+                                    $('#exampleModalLabel').empty()
+                                    $('#exampleModalLabel').append('Erro');
+                                    $('#modal_body').append('<p>Erro desconhecido</p>');
+                                    $('#ShowModal').trigger('click')
+                                    break;
+                            }
+                        })
+                    }else{
+                        $('#modal_body').empty()
+                        $('#exampleModalLabel').empty()
+                        $('#exampleModalLabel').append('Senhas diferentes');
+                        $('#modal_body').append('<p>Senhas não coincidem</p>');
+                        $('#ShowModal').trigger('click')
+                    }
+                }else{
+                    $('#modal_body').empty()
+                    $('#exampleModalLabel').empty()
+                    $('#exampleModalLabel').append('Senhas invalida');
+                    $('#modal_body').append('<p>As senhas precisam ter entre 8 e 12 caracteres, pelo menos um numero e pelo menos uma letra</p>');
+                    $('#ShowModal').trigger('click')
+                }
+            }else{
+                    $('#modal_body').empty()
+                    $('#exampleModalLabel').empty()
+                    $('#exampleModalLabel').append('Email invalido');
+                    $('#modal_body').append('<p>Esse email não é aceito por nossos servidores, tem certeza que não esqueceu de algo?</p>');
+                    $('#ShowModal').trigger('click')
+            }
+        }
+        
+    </script>
+    <script>
+        //Aqui a função visual usando o jquery para se mover
         function Slide(element) {
             /*
             * Jquery ids são #+id
@@ -136,7 +277,7 @@
     Launch demo modal
   </button>
   
-  <!-- Modal -->
+  <!-- Modal do bootstrap -->
   <div class="modal fade" id="popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -153,53 +294,54 @@
     </div>
   </div>
     <div id="loginbox">           
-            <section id="login"">
-                <form id="login_form" onsubmit="Login(); return false" method="POST">
-                    <h1>Login</h1>
+        <section id="login">
+            <form id="login_form" class= "needs-validation"onsubmit="Login(); return false" method="POST">
+                <h1>Login</h1>
 
-                    <div>
-                        <label for="email">Email: </label><br />
-                        <input type="email" id="email" name="email" required placeholder="Digite seu email">
-                    </div>
+                <div>
+                    <label for="email">Email: </label><br />
+                    <input type="email" id="email" name="email" required placeholder="Digite seu email" maxlength="100">
+                </div>
 
-                    <div>
-                        <label for="password">Senha: </label><br />
-                        <input type="password"  id="password" name="pass" required placeholder='Digite sua senha' /> 
-                    </div>
+                <div>
+                    <label for="password">Senha: </label><br />
+                    <input type="password"  id="password" name="pass" required placeholder='Digite sua senha' maxlength="12"/> 
+                </div>
 
-                        <span onclick="alert('Função não implementada')">Esqueceu sua senha?</span>
-                        <input type="submit" value="Entrar">
+                <span onclick="alert('Função não implementada')">Esqueceu sua senha?</span>
+                <input type="submit" value="Entrar">
 
-                        <!--Aqui eu estou pegando o parente desse span, que será o elemento que eu vou precisar mover-->
-                    
-                        <span onclick="Slide($(this).parent().parent().attr('id'))">ou cadastre-se!</a>
-                    </form>
-            </section>
+                <!--Aqui eu estou pegando o parente desse span, que será o elemento que eu vou precisar mover-->
+            
+                <span onclick="Slide($(this).parent().parent().attr('id'))">ou cadastre-se!</span>
+            </form>
+        </section>
 
-            <section id="cadastro">
-                <form id="cadastro_form" method="POST" onsubmit="Login(); return false">
-                    <h1>Cadastro</h1>
+        <section id="cadastro">
+            <form id="cadastro_form" onsubmit="Cadastro(); return false;" method="POST">
+                <h1>Cadastro</h1>
 
-                    <div>
-                        <label for="email_cadastro">Email: </label><br />
-                        <input type="email" id="email_cadastro" name="email_cadastro" required placeholder="Digite seu email"> 
-                    </div>
+                <div>
+                    <label for="email_cadastro">Email: </label><br />
+                    <input type="email" id="email_cadastro" name="email_cadastro" required placeholder="Digite seu email" maxlength="100"/> 
+                </div>
 
-                    <div>
-                        <label for="password_cadastro">Senha: </label><br />
-                        <input type="password"  id="password_cadastro" name="password_cadastro" required placeholder='Digite sua senha' /> 
-                    </div>
+                <div>
+                    <label for="password_cadastro">Senha: </label><br />
+                    <input type="password"  id="password_cadastro" name="password_cadastro" required placeholder='Digite sua senha' maxlength="12" /> 
+                </div>
 
-                    <div>
-                        <label for="password_confirmacao_cadastro">Confirmar senha: </label><br />
-                        <input type="password"  id="password_confirmacao_cadastro" name="password_confirmacao_cadastro" required placeholder='Digite sua senha novamente' /> 
-                    </div>
+                <div>
+                    <label for="password_confirmacao_cadastro">Confirmar senha: </label><br />
+                    <input type="password"  id="password_confirmacao_cadastro" name="password_confirmacao_cadastro" required placeholder='Digite sua senha novamente'  maxlength="12"/> 
+                </div>
 
-                        <input type="submit" value="Entrar">
-                        <span onclick="Slide($(this).parent().parent().attr('id'))">Ja tenho uma conta</a>
-    
-                    </form>        
-            </section>
+                <input type="submit" value="Cadastrar">
+
+                <span onclick="Slide($(this).parent().parent().attr('id'))">Ja tenho uma conta</span>
+
+            </form>        
+        </section>
     </div>
 </body>
 </html>

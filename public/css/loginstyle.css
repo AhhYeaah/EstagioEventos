@@ -36,7 +36,6 @@ section{
 
 /*E a especifica para o cadastro que ja aparece invisivel*/
 #cadastro{
-    visibility: hidden;
     opacity: 0;
 }
 /* E pro login ficar centralizadopois não tem o input password extra*/
