@@ -1,38 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos</title>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js" integrity="sha512-Meww2sXqNHxI1+5Dyh/9KAtvI9RZSA4c1K2k5iL02oiPO/RH3Q30L3M1albtqMg50u4gRTYdV4EXOQqXEI336A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Eventos</title>
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.js"></script>
+	<!--Cookie js, axios e a fonte-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"
+		integrity="sha512-Meww2sXqNHxI1+5Dyh/9KAtvI9RZSA4c1K2k5iL02oiPO/RH3Q30L3M1albtqMg50u4gRTYdV4EXOQqXEI336A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+		integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
+	<!--Jquery, bootstrap, fullcalendar e pleasejs pra gerar cor-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+		crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pleasejs/0.4.2/Please.min.js"
+		integrity="sha512-XTYPyRh2VppCJQXdjcQrCXVpleLCiMB2PSztUvaeQJvT1mhNxkAKMWH7F2hE1C+yxngS4kchaMM+wkv8HVQ4Ww=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="stylesheet" href="./calendarstyle.css" >
+	</style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          var calendarEl = document.getElementById('calendar');
-          var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth'
-          });
-          calendar.render();
-        });
-    </script>
-    <script>
-      function deslogar(){
-        Cookies.remove('userSession');
-        window.location.href = "../"
-      }
-    </script>
+	<script>
+		//Desloga o usuario apagando os cookies e movendo-o de volta para a tela de login
+
+
+		//Cores aleatorias
+		const colors = Please.make_color({
+			full_random: true,
+			value: 1,
+			saturation: 0,
+			colors_returned: 100,
+			format: 'rgb-string'
+		});
+
+		//Pra impedir do formulario ser enviado caso o usuario pressione enter
+		$(document).ready(function () {
+			$(window).keydown(function (event) {
+				if (event.keyCode == 13) {
+					event.preventDefault();
+					return false;
+				}
+			});
+
+			$('#modal-dismiss').click(() => {
+				$('#titulo').removeClass('is-invalid');
+				$('#fim').removeClass('is-invalid');
+				$('#inicio').removeClass('is-invalid');
+				$('#formulario').trigger('reset');
+			})
+			$('.btn-close').click(() => {
+				$('#titulo').removeClass('is-invalid');
+				$('#fim').removeClass('is-invalid');
+				$('#inicio').removeClass('is-invalid');
+				$('#formulario').trigger('reset');
+			})
+
+			//Cores aleatorias
+			const colors = Please.make_color({
+				full_random: true,
+				value: 1,
+				saturation: 0,
+				colors_returned: 100,
+				format: 'rgb-string'
+			});
+			//Pegando os eventos do banco e exibindo no calendario
+			axios.get('index/getEvents', { withCredentials: true }).then(function (result) {
+				result.data.forEach(event => {
+					evento = {
+						title: event.Event_Name,
+						start: event.Date_Start.slice(0, 16).replace('T', ' '),
+						end: event.Date_End.slice(0, 16).replace('T', ' '),
+						backgroundColor: colors[Math.round((Math.random() * (100 - 1) + 1))],
+						descricao: event.Event_Description
+					}
+					calendar.addEvent(evento)
+				})
+			})
+		});
+	</script>
 
 </head>
-<body>
-    <div>
 
-    </div>
-    <div id='calendar' style="width: 600px; height:600px"></div>
-    <button value="logOut"  onclick="deslogar()">logOut</button>
+<body>
+	<div id="loginbox">
+		<div id='calendar'></div>
+		<button value="logOut" id="logout" class="btn btn-primary"
+			onclick="editModal(null, 'Logout', null)">Logout</button>
+	</div>
+
+
+	<!-- Button trigger modal -->
+	<button type="button" id="showModal" class="btn btn-primary" data-bs-toggle="modal" style="display: none;"
+		data-bs-target="#staticBackdrop">
+		Launch static backdrop modal
+	</button>
+
+	<!-- Modal -->
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabel">Criar evento</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="formulario" onsubmit="criarEvento(); return false">
+						<div class="input">
+							<label for="titulo" id="lbl_titulo" class="form-label">Digite o nome do evento a ser
+								adicionado:</label>
+							<input type="text" name="titulo" id="titulo" class="form-control" maxlength="100" />
+							<div class="invalid-feedback">
+								Eventos não podem ter titulos iguais e valores nulos
+							</div>
+						</div>
+						<div class="input">
+							<label for="inicio" id="lbl_inicio" class="form-label">A data e hora de inicio:</label>
+							<input type="datetime-local" class="form-control" name="inicio" id="inicio" />
+							<div class="invalid-feedback">
+								A data inicial não pode ser antes da data atual
+							</div>
+						</div>
+						<div class="input">
+							<label for="fim" id="lbl_fim" class="form-label">A data e a hora do fim:</label>
+							<input type="datetime-local" class="form-control" name="fim" id="fim" />
+							<div class="invalid-feedback">
+								A data final não pode ser antes da data inicial ou ser a data inicial.
+							</div>
+						</div>
+						<div class="input">
+							<label for="descricao" id="lbl_descricao" class="form-label">Descrição do evento:</label>
+							<textarea id="descricao" name="descricao" class="form-control" maxlength="500"></textarea>
+						</div>
+					</form>
+					<form id="formulario-delete" onsubmit="criarEvento(); return false">
+						<div>
+							<label for="select-delete" class="form-label">Selecione o evento que deseja excluir:</label>
+							<select id="select-delete" name="select-delete" class="form-control"></select>
+						</div>
+					</form>
+					<p id="encerrar" style="display: none">Você esta prestes a encerrar sua sessão</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" id="modal-dismiss"
+						data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="modal-submit"
+						onclick="criarEvento()">Understood</button>
+					<button type="button" class="btn btn-danger" style="display: none;" id="delete"
+						onclick="editModal(null, 'Deletar', null)">Deletar evento</button>
+					<button type="button" class="btn btn-danger" style="display: none;" id="delete-forreal"
+						onclick="removerEvento()">Deletar evento</button>
+					<button type="button" class="btn btn-primary" id="update" onclick="editarEvento()">Editar
+						evento</button>
+					<button type="button" class="btn btn-primary" id="logout-modal" style="display: none;"
+						onclick="deslogar()">Sim</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Toasts-->
+	<button type="button" id="ToastSucess" style="display: none;"></button>
+	<button type="button" id="ToastDanger" style="display: none;"></button>
+	<div id="toast" class="toast align-items-center text-white bg-success border-0 position-absolute bottom-0 end-0"
+		role="alert" aria-live="assertive" aria-atomic="true" style="margin: 30px;">
+		<div class="d-flex">
+			<div class="toast-body" id="toast-body">
+				Evento salvo no banco
+			</div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+				aria-label="Close"></button>
+		</div>
+	</div>
+	<div id="toast-erro" class="toast align-items-center text-white bg-danger border-0 position-absolute bottom-0 end-0"
+		role="alert" aria-live="assertive" aria-atomic="true" style="margin: 30px;">
+		<div class="d-flex">
+			<div class="toast-body">
+				Algo deu errado
+			</div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+				aria-label="Close"></button>
+		</div>
+	</div>
+
+	<script>
+		//Para exibis os toasts
+		$('#ToastSucess').click(() => {
+			$('#toast').toast('show')
+		})
+		$('#ToastDanger').click(() => {
+			$('#toast-erro').toast('show')
+		})
+		//Como estou usando o fullcalendar, preciso fazer isso
+
+		let calendarEl = $('#calendar').get(0);
+		let calendar = new FullCalendar.Calendar(calendarEl, {
+
+			locale: 'pt-br',
+			initialDate: Date.now(),
+
+			themeSystem: 'Default',
+			titleFormat: { year: 'numeric', month: 'long' },
+			headerToolbar: {
+				start: 'prev,next today',
+				center: 'title',
+				end: 'listMonth dayGridMonth,dayGridWeek'
+			},
+			initialView: 'dayGridMonth',
+
+			selectable: true,
+			dateClick: function (info) {
+				editModal(info, "Adicionar", false)
+			},
+			select: function (info) {
+				editModal(info, "Adicionar", true)
+			},
+			eventClick: function (info) {
+				editModal(info, "Editar", false)
+			},
+			eventBackgroundColor: '#c0c0c0',
+			eventBorderColor: '#000000',
+			validRange: {
+				start: Date.now()
+			}
+		});
+		//Iniciando o calendario
+		calendar.render();
+
+		function criarEvento() {
+			//Essa função efetivamente cria o evento e manda pro banco de dados
+
+			//Começamos pegando os dados do formulario
+			var dados = $('#formulario').serializeArray();
+			//Em seguida eu fiz esse objeto pra ficar mais facil de lidar com os eventos
+			var evento = {
+				title: dados[0].value.trim(),
+				start: dados[1].value,
+				end: dados[2].value,
+				backgroundColor: colors[Math.round((Math.random() * (100 - 1) + 1))],
+				extendedProps: {
+					descricao: dados[3].value
+				},
+			}
+
+			//Aqui eu loopo por todo o array e trago os que tiverem o mesmo titulo
+			//Caso tenha algum eu sei que tem algum evento com esse titulo e posso
+			//Impedir o usuario de usar
+			var hasDuplicatedTitle = calendar.getEvents().filter(element => {
+				return element._def.title == evento.title
+			});
+			//Transformo o valor em booleano
+			hasDuplicatedTitle = (hasDuplicatedTitle.length != 0)
+
+			//Isso aqui não parece ter muito sentido mas, faz.
+			//O botão de fechar basicamente esta retirando toda as formatação que 
+			//É adicionada quando o formulario é invalido, pra caso o formulario
+			//Seja invalido mas a tela tenha sido fechada 
+
+
+			//Se *não* tiver titulo duplicado e titulo diferente de vazio
+			if (!hasDuplicatedTitle && evento.title != "") {
+				//Pulamos pra segunda parte da validação, se a data do fim for menor
+				//Que a data do inicio, o formulario não pode ser enviado, por motivos obvios
+				//E a data inicial não pode ser antes do presente momento
+				var inicioData = new Date(evento.start);
+				var fimData = new Date(evento.end);
+				if ((Date.parse(inicioData) - Date.now()) > 0) {
+					if ((fimData - inicioData) > 0) {
+						//Aqui ja começo a preparar para enviar as informaçoes pro banco
+						//Primeiro coloco o evento no calendario
+						var evento = calendar.addEvent(evento)
+						//Em seguida mando esse evento para a rota do express pra ser adicionado
+						axios.post('index/addEvento', {
+							titulo: evento._def.title,
+							inicio: evento.startStr.slice(0, 16).replace('T', ' '),
+							fim: evento.endStr.slice(0, 16).replace('T', ' '),
+							descricao: evento.extendedProps.descricao,
+							withCredentials: true
+						}).then((result) => {
+							//E aciono o toast falando que tudo deu certo
+							$('#toast-body').empty()
+							$('#toast-body').append('Evento salvo com sucesso')
+							$('#ToastSucess').trigger('click')
+
+						}).catch((error) => {
+							//E se não der, aciono o falando que algo deu errado
+							//E removo o evento que acabei de colocar do calendario
+							$('#ToastDanger').trigger('click')
+							evento[0].remove()
+						})
+						//E tiro a formatação do form
+						$('#titulo').removeClass('is-invalid')
+						$('#fim').removeClass('is-invalid');
+						$('#inicio').removeClass('is-invalid');
+
+						//O ressetando e fechando em seguida
+						$('#formulario').trigger('reset');
+						$('#modal-dismiss').trigger('click');
+					} else {
+						//Remove a formatação do inicio, pois afinal, pra estar aqui
+						//Teve que passar pelo teste, e coloca no datepicker pq ele falhou
+						$('#inicio').removeClass('is-invalid');
+						$('#fim').addClass('is-invalid');
+					}
+				} else {
+					//Remove a formatação do titulo, pois afinal, pra estar aqui
+					//Teve que passar pelo teste, e coloca no datepicker pq ele falhou
+					$('#titulo').removeClass('is-invalid');
+					$('#inicio').addClass('is-invalid');
+				}
+			} else {
+				//Caso o titulo esteja errado, aciona a classe de invalidez do bootstrap
+				$('#titulo').addClass('is-invalid');
+			}
+		}
+
+		function removerEvento() {
+			//Loopa por todos os eventos e muda aquele que o titulo for igual o do select
+			var data = $('#formulario-delete').serializeArray()
+
+			calendar.getEvents().forEach(element => {
+				if (element._def.title == data[0].value) {
+					axios.post('index/deleteEvento', {
+						titulo: element._def.title,
+						withCredentials: true
+					}).then(() => {
+						$('#toast-body').empty()
+						$('#toast-body').append('Evento deletado com sucesso')
+						$('#ToastSucess').trigger('click')
+						element.remove()
+					}).catch(() => {
+						$('#ToastDanger').trigger('click')
+					})
+				}
+			});
+			$('#modal-dismiss').trigger('click')
+		}
+
+		function editarEvento() {
+			//Loopa por todos os eventos e muda aquele que o titulo for igual o do select
+			var dados = $('#formulario').serializeArray()
+
+			//Em seguida eu fiz esse objeto pra ficar mais facil de lidar com os eventos
+			var evento = {
+				title: $('#titulo').val(),
+				start: dados[0].value,
+				end: dados[1].value,
+				extendedProps: {
+					descricao: dados[2].value
+				},
+			}
+
+			var inicioData = new Date(evento.start);
+			var fimData = new Date(evento.end);
+			if ((Date.parse(inicioData) - Date.now()) > 0) {
+				if ((fimData - inicioData) > 0) {
+					//Aqui ja começo a preparar para enviar as informaçoes pro banco
+					//Primeiro coloco o evento no calendario
+
+					//Em seguida mando esse evento para a rota do express pra ser updateado
+					calendar.getEvents().forEach(element => {
+						if (element._def.title == evento.title) {
+							axios.post('index/updateEvento', {
+								titulo: element._def.title,
+								inicio: evento.start.slice(0, 16).replace('T', ' '),
+								fim: evento.end.slice(0, 16).replace('T', ' '),
+								descricao: evento.extendedProps.descricao,
+								withCredentials: true
+							}).then((result) => {
+								//mudo o evento
+								element.setStart(evento.start)
+								element.setEnd(evento.end)
+								element.setExtendedProp('descricao', evento.extendedProps.descricao)
+								//E aciono o toast falando que tudo deu certo
+								$('#toast-body').empty()
+								$('#toast-body').append('Evento editado com sucesso')
+								$('#ToastSucess').trigger('click')
+							}).catch((error) => {
+								//E se não der, aciono o falando que algo deu errado
+								//E removo o evento que acabei de colocar do calendario
+								$('#ToastDanger').trigger('click')
+							})
+							$('#fim').removeClass('is-invalid');
+							$('#inicio').removeClass('is-invalid');
+
+							//O ressetando e fechando em seguida
+							$('#titulo').removeAttr('disabled')
+							$('#formulario').trigger('reset');
+							$('#modal-dismiss').trigger('click');
+						}
+					});
+				} else {
+					//Remove a formatação do inicio, pois afinal, pra estar aqui
+					//Teve que passar pelo teste, e coloca no datepicker pq ele falhou
+					$('#inicio').removeClass('is-invalid');
+					$('#fim').addClass('is-invalid');
+				}
+			} else {
+				$('#inicio').addClass('is-invalid');
+			}
+		}
+
+		function editModal(info, type, selecionou) {
+			switch (type) {
+				case "Editar":
+					//Abrindo modal
+					$('#showModal').trigger('click')
+
+					//Mudando o titulo pra editar
+					$('.modal-title').empty();
+					$('.modal-title').append('Editar evento');
+
+					//Pegando dados do evento clicado
+					$('#titulo').val(info.event._def.title.trim())
+					$('#titulo').attr('disabled', 'disabled');
+					$('#inicio').attr('value', info.event.startStr.slice(0, 16))
+					$('#fim').attr('value', info.event.endStr.slice(0, 11) + "23:59")
+					$('#descricao').val(info.event.extendedProps.descricao.toString())
+
+					//Ressetando o modal pra posição de edit
+					$('#delete').css('display', 'block')
+					$('#update').css('display', 'block')
+					$('#formulario').css('display', 'block')
+
+					$('#delete-forreal').css('display', 'none')
+					$('#formulario-delete').css('display', 'none')
+					$('#modal-submit').css('display', 'none')
+					$('#logout-modal').css('display', 'none')
+					$('#encerrar').css('display', 'none')
+
+					$('#modal-dismiss').empty()
+					$('#modal-dismiss').append("Cancelar");
+					$('#lbl_titulo').empty()
+					$('#lbl_titulo').append("Titulos não podem ser editados.");
+					break;
+				case "Adicionar":
+
+					//Mudando titulo para Adicionar
+					$('.modal-title').empty();
+					$('.modal-title').append("Adicionar evento");
+
+					//Ressetando o modal para caso o delete tenha sido chaamado anteriormente
+					$('#delete').css('display', 'none')
+					$('#delete-forreal').css('display', 'none')
+					$('#update').css('display', 'none')
+					$('#formulario-delete').css('display', 'none')
+					$('#titulo').removeAttr('disabled')
+					$('#logout-modal').css('display', 'none')
+					$('#encerrar').css('display', 'none')
+
+					$('#modal-submit').css('display', 'block')
+					$('#formulario').css('display', 'block')
+
+					$('#modal-dismiss').empty()
+					$('#modal-dismiss').append("Cancelar");
+
+					if (selecionou == true) {
+						/*
+						*Quando eu seleciono uma data no calendario ela vem com um segundo a mais
+						*Isso causa problemas, um evento que vai de 22/05 até 26/05 me traria
+						*22/05 até 27/05 00:00
+						*Corrijo isso retirando um milissegundo da data e em seguida corrigindo o timezone
+						*Isso daria problemas em algum outro lugar do mundo, por conta do timezone incorreto
+						*Mas estou ficando sem tempo então é melhor deixar assim
+						*/
+						info.end.setTime(info.end - (1000 * 60 * 60 * 3) - 1)
+						$('#inicio').attr('value', info.startStr + "T00:00")
+
+						//retiro informaçoes desnecessarias da date pra ficar do jeito que o input aceita
+						$('#fim').attr('value', info.end.toISOString().slice(0, 16))
+					} else {
+						$('#inicio').attr('value', info.dateStr + "T00:00");
+						$('#fim').attr('value', info.dateStr + "T23:59");
+					}
+					//Mudando botão
+					$('#modal-submit').empty();
+					$('#modal-submit').append("Adicionar evento");
+					//Abrindo modal
+
+					$('#showModal').trigger('click')
+					break;
+				case "Deletar":
+					//Mudando o titulo pra editar
+					$('.modal-title').empty();
+					$('.modal-title').append('Deletar evento');
+
+					//Ressetando modal
+					$('#modal-submit').css('display', 'none')
+					$('#formulario').css('display', 'none')
+					$('#formulario-delete').css('display', 'block')
+					$('#delete').css('display', 'none')
+					$('#delete-forreal').css('display', 'block')
+					$('#update').css('display', 'none')
+					$('#logout-modal').css('display', 'none')
+					$('#encerrar').css('display', 'none')
+
+					//Adicionando options ao select com getEvents
+					$('#select-delete').empty();
+					calendar.getEvents().forEach(element => {
+						$('#select-delete').append('<option value="' + element._def.title + '">' + element._def.title + '</option>');
+					});
+
+					$('#modal-dismiss').empty()
+					$('#modal-dismiss').append("Não!");
+					break;
+				case "Logout":
+					$('.modal-title').empty();
+					$('.modal-title').append('Tem certeza?');
+
+					//Ressetando modal
+					$('#modal-submit').css('display', 'none')
+					$('#formulario').css('display', 'none')
+					$('#formulario-delete').css('display', 'none')
+					$('#delete').css('display', 'none')
+					$('#delete-forreal').css('display', 'none')
+					$('#update').css('display', 'none')
+					$('#logout-modal').css('display', 'block')
+					$('#encerrar').css('display', 'inline')
+
+					$('#modal-dismiss').empty()
+					$('#modal-dismiss').append("Deixa quieto...");
+
+					$('#showModal').trigger('click')
+			}
+		}
+		//Remove os cookies e manda pro login
+		function deslogar() {
+			Cookies.remove('userSession');
+
+			$('.modal-content').empty();
+			$('.modal-content').replaceWith('<div class="spinner-border text-light spinner" role="status"></div>');
+			$('#ShowModal').trigger('click')
+			setTimeout(() => {
+				window.location.href = "../"
+			}, 2000)
+		}
+	</script>
 </body>
+
+
 </html>

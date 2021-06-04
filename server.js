@@ -6,7 +6,7 @@ const server = require('http').createServer(app);
 //cors
 app.use(require('cors')());
 
-//mongoose for db and dotenv to hide the db credentials
+//dotenv to hide the db credentials
 require('dotenv').config()
 
 // This allows me to view html and css files and render them 

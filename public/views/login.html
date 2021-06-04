@@ -18,30 +18,22 @@
     <script>
         //Quando a janela estiver carregada, peça para o servidor o firstSession cookie
         //ou então, se tiver o cookie de seção, envie para o servidor para que ele possa
-        //Enviar informações
+        //validar e então redirecionar
         $(document).ready(()=>{
             Cookies.remove('firstSession', '')
             var firstSessionCookie = Cookies.get("firstSession")
             var sessionCookies = Cookies.get("userSession")
-
-            setTimeout(function(){
-                $('#modal_body').empty()
-                $('#exampleModalLabel').empty()
-                $('#exampleModalLabel').append('Sessão prestes a expirar');
-                $('#modal_body').append('<p>Sua sessão ira expirar em 1 minuto e a pagina será recarregada</p>');
-                $('#ShowModal').trigger('click')
-            }, 29*60*1000)
-
-            setTimeout(function(){
-                location.reload(true)  
-            }, 30*60*1000)
-
-
+            
             if(sessionCookies){
                 axios.post('/login', {
                     withCredentials: true
                 }).then(function(result){
-                    window.location.href = "/index"
+                    $('.modal-content').empty();    
+                    $('.modal-content').replaceWith('<div class="spinner-border text-light spinner" role="status"></div>');
+                    $('#ShowModal').trigger('click')
+                    setTimeout(()=>{
+                        window.location.href = "/index"
+                    }, 2000)
                 }
                 );
             }else{
@@ -55,6 +47,18 @@
                     });
                 }
             }
+            
+            setTimeout(function(){
+                $('#modal_body').empty()
+                $('#exampleModalLabel').empty()
+                $('#exampleModalLabel').append('Sessão prestes a expirar');
+                $('#modal_body').append('<p>Sua sessão ira expirar em 1 minuto e a pagina será recarregada</p>');
+                $('#ShowModal').trigger('click')
+            }, 29*60*1000)
+
+            setTimeout(function(){
+                location.reload(true)  
+            }, 30*60*1000)
         })
     </script>
     <script>
@@ -73,7 +77,12 @@
                 withCredentials: true
                 //TODO: Caso o resultado seja um sucesso, redireciona para pagina de calendario
             }).then((result)=>{
-                window.location.href = "/index"
+                $('.modal-content').empty();    
+                $('.modal-content').replaceWith('<div class="spinner-border text-light spinner" role="status"></div>');
+                $('#ShowModal').trigger('click')
+                setTimeout(()=>{
+                    window.location.href = "/index"
+                }, 2000)
             }).catch((error)=>{
                 //Criação dos modais para respostas do servidor
                 switch(error.response.data){
@@ -152,7 +161,12 @@
                             withCredentials: true
                             //TODO: Caso o resultado seja um sucesso, redireciona para pagina de calendario
                         }).then((result)=>{
-                            window.location.href = "/index"
+                            $('.modal-content').empty();    
+                            $('.modal-content').replaceWith('<div class="spinner-border text-light spinner" role="status"></div>');
+                            $('#ShowModal').trigger('click')
+                            setTimeout(()=>{
+                                window.location.href = "/index"
+                            }, 2000)
                         }).catch((error)=>{
                             //Criação dos modais para respostas do servidor
                             switch(error.response.data){
@@ -186,7 +200,7 @@
                                     Cookies.remove('firstSession')
                                     setTimeout(function(){
                                         location.reload(true)  
-                                    }, 10000)
+                                    }, 5000)
                                     break;
                                 case "ER_DUP_ENTRY":
                                     $('#modal_body').empty()
@@ -276,21 +290,21 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup" id="ShowModal" style="visibility:hidden; position: absolute;top: 0;left: 0;">
     Launch demo modal
   </button>
-  
+
   <!-- Modal do bootstrap -->
-  <div class="modal fade" id="popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"  data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Email ou senha incorretos</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="modal_body">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        </div>
-      </div>
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Email ou senha incorretos</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal_body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+            </div>
+          </div>
     </div>
   </div>
     <div id="loginbox">           
